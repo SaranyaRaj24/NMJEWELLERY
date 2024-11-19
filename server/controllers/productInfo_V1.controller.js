@@ -9,6 +9,10 @@ const createNewProduct = async (req, res) => {
       before_weight = 0,
       after_weight = 0,
       product_number,
+      stone_charge,
+        hud,
+        length,
+        
       lot_id = "",
       barcode_weight = 0,
     } = req.body;
@@ -21,6 +25,9 @@ const createNewProduct = async (req, res) => {
         tag_number,
         before_weight: weight1,
         after_weight: weight2,
+        difference:parseFloat(stone_charge),
+        adjustment:parseFloat(hud),
+        final_weight:parseFloat(length),
         barcode_weight: parseFloat(barcode_weight),
         product_number: tag_number + Math.random(4) * 1000,
         lot_id,

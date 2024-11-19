@@ -68,24 +68,24 @@ const AddBilling = () => {
                 </th>
                 <th>
                   <Checkbox {...label} style={{ color: "white" }} />
-                  Before weight
+                  Gross Weight
                 </th>
                 <th>
                   <Checkbox {...label} style={{ color: "white" }} />
-                  After weight
+                  Net Weight
                 </th>
                 <th>
                   <Checkbox {...label} style={{ color: "white" }} />
-                  Difference
+                  Stone Charges
                 </th>
                 <th>
                   <Checkbox {...label} style={{ color: "white" }} />
-                  Adjustment
+                  HUD
                 </th>
                 <th>
                   <Checkbox {...label} style={{ color: "white" }} />
-                  Final weight
-                </th>
+                  Length
+                  </th>
               </tr>
             </thead>
             <tbody>
