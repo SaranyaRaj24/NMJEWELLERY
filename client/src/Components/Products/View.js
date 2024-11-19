@@ -131,10 +131,10 @@ const WeightFormPopup = ({
                   // backgroundColor:'blue'
                 }}
               >
-                <div style={{display:'flex', gap:'14rem'}}> 
-                <div style={{ marginRight: "10px", fontSize: "12px" }}>NM</div>
-                <Barcode value={selectedProductNo || ""} size={30} /> </div>
-                <div style={{  fontSize: "7px",marginLeft:'2rem' }}>
+                <div style={{display:'flex',justifyContent:"center",alignItems:"center"}}> 
+                <div style={{ marginRight:'3rem', fontSize: "20px" ,fontWeight:'bold',height:'40px',display:"flex",flexDirection:"column"}}><span>Navamithra</span><span>Jewellery</span></div>
+                <Barcode value={selectedProductNo || ""} size={80}  /> </div>
+                <div style={{  fontSize: "18px",marginLeft:'2rem' , fontWeight:'bold'}}>
                   <div>GW: {beforeWeight}</div>
                   <div>NW: {afterWeight}</div>
                   <div>SGG3</div>

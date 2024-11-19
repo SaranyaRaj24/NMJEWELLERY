@@ -12,10 +12,13 @@
 
 
 const express = require('express');
-const { getAllBills, createBills, deleteBills, modifyBillHold } = require('../controllers/bills.controllers');
+const { getAllBills, createBills, deleteBills, modifyBillHold, getBillsByBillNumber } = require('../controllers/bills.controllers');
 const router = express.Router();
 
 router.get('/getAll',getAllBills);
+
+router.get('/bills/:bill_number',getBillsByBillNumber)
+
 router.post('/create',createBills);
 router.delete('/delete/:id',deleteBills); 
 
