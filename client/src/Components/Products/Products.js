@@ -15,8 +15,6 @@ const Products = () => {
   const [showAddItemsPopup, setShowAddItemsPopup] = useState(false);
   const [products, setProducts] = useState([]);
 
-
-
   const [showBarcode, setShowBarcode] = useState(false);
   const [selectedProductNo, setSelectedProductNo] = useState(null);
   const barcodeRef = useRef(null);
@@ -38,30 +36,26 @@ const Products = () => {
 
   const [showPopup, setShowPopup] = useState({ id: null, value: false });
 
-
- 
   const afterWeightRef = useRef(null);
   const differenceRef = useRef(null);
   const adjustmentRef = useRef(null);
   const finalWeightRef = useRef(null);
   const productNumberRef = useRef(null);
   const productWeightRef = useRef(null);
- 
+
   const handleKeyDown = (e, nextField) => {
     if (e.key === "Enter") {
       e.preventDefault();
       nextField.current.focus();
     }
   };
- 
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-
-      
-
-
-        const response = await axios.get("http://localhost:5000/api/v1/products/getAll" + lot_id);
+        const response = await axios.get(
+          "http://localhost:5000/api/v1/products/getAll" + lot_id
+        );
 
         setProducts(response.data);
       } catch (error) {
@@ -75,13 +69,8 @@ const Products = () => {
     setShowAddItemsPopup(true);
   };
 
-
   const openPopup = (id) => {
     setShowPopup({ id });
-
- 
- 
-
   };
   const handleSaveee = (productId) => {
     setSelectedProductId(productId);
@@ -90,7 +79,6 @@ const Products = () => {
   const closePopup = () => {
     setShowPopup({ id: null });
   };
-
 
   const closeAddItemsPopup = () => {
     setShowAddItemsPopup(false);
@@ -107,13 +95,8 @@ const Products = () => {
           }
         );
         const lotData = response.data;
- 
+
         console.log("Fetched Lot Data:", lotData);
-
-
-
- 
- 
 
         if (lotData) {
           setBulkWeightBefore(lotData.result.bulk_weight_before || "");
@@ -121,23 +104,18 @@ const Products = () => {
         }
       } catch (error) {
         console.error("Failed to fetch lot details:", error);
-
- 
       }
     };
- 
+
     fetchLotDetails();
   }, [lot_id]);
 
-
- 
-
-
- 
   const handleDelete = async (productId) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        const response = await axios.delete(`http://localhost:5000/api/v1/products/delete/${productId}`);
+        const response = await axios.delete(
+          `http://localhost:5000/api/v1/products/delete/${productId}`
+        );
 
         if (response.status === 200) {
           setProducts((prevProducts) =>
@@ -152,11 +130,8 @@ const Products = () => {
     }
   };
 
- 
- 
   const handleUpdateWeights = async () => {
- 
-    console.log(bulkWeightAfter,bulkWeightBefore,"oooooooooooo")
+    console.log(bulkWeightAfter, bulkWeightBefore, "oooooooooooo");
 
     const payload = {
       lot_id: Number(lot_id),
@@ -164,29 +139,19 @@ const Products = () => {
       bulk_after_weight: parseFloat(bulkWeightAfter),
     };
 
-
-
- 
- 
-
     try {
       const response = await axios.post(
         "http://localhost:5000/api/v1/lot/modify_lot",
         payload
       );
- 
+
       if (response.status === 200) {
-
         console.log("dataaa", response.data.result);
-
-
- 
- 
 
         const value = response.data.result;
         setBulkWeightAfter(value.bulk_after_weight);
         setBulkWeightBefore(value.bulk_weight_before);
- 
+
         alert("Bulk weights updated successfully!");
       }
     } catch (error) {
@@ -194,7 +159,7 @@ const Products = () => {
       alert("There was an error updating the bulk weights.");
     }
   };
- 
+
   const fetchProducts = async () => {
     try {
       const response = await axios.get(
@@ -206,8 +171,6 @@ const Products = () => {
     }
   };
 
-
-
   useEffect(() => {
     fetchProducts();
   }, [lot_id]);
@@ -217,21 +180,15 @@ const Products = () => {
       alert("Please enter both Bulk Weight Before and Bulk Weight After.");
       return;
     }
- 
+
     try {
       const response = await axios.get(
-
         `http://localhost:5000/api/v1/products/calculate/${lot_id}`
       );
-
 
       if (response.status === 200) {
         const calculatedProducts = response.data.products;
         setProducts(calculatedProducts);
-
-
-
- 
 
         const firstProduct = calculatedProducts[0];
         setBeforeWeight(firstProduct.before_weight || "");
@@ -243,8 +200,6 @@ const Products = () => {
         setStatus(firstProduct.product_type || "");
         setProductWeight(firstProduct.barcode_weight || "");
 
-
-
         alert("Calculated values updated successfully!");
       }
     } catch (error) {
@@ -252,21 +207,18 @@ const Products = () => {
       alert("There was an error calculating the adjustments.");
     }
   };
- 
+
   const handleSave = async () => {
-    // if (!beforeWeight && !afterWeight && !productNumber && !productWeight) {
-    //   alert("Please fill in at least one field before saving.");
-    //   return;
-    // }
+    
 
     try {
       const payload = {
         tag_number: lotNumber,
         before_weight: beforeWeight || null,
         after_weight: afterWeight || null,
-        stone_charge:difference|| null,
-        hud:adjustment || null,
-        length:finalWeight || null,
+        stone_charge: difference || null,
+        hud: adjustment || null,
+        length: finalWeight || null,
         barcode_weight: productWeight || null,
         lot_id: Number(lot_id),
       };
@@ -275,8 +227,6 @@ const Products = () => {
         "http://localhost:5000/api/v1/products/create",
         payload
       );
-
-
 
       if (response.status === 200) {
         setProducts((prevProducts) => [
@@ -292,66 +242,50 @@ const Products = () => {
     }
   };
 
+  const totalBeforeWeight = products
+    .reduce((acc, product) => acc + parseFloat(product.before_weight || 0), 0)
+    .toFixed(3);
+  const totalAfterWeight = products
+    .reduce((acc, product) => acc + parseFloat(product.after_weight || 0), 0)
+    .toFixed(3);
+  const totalDifference = products
+    .reduce((acc, product) => acc + parseFloat(product.difference || 0), 0)
+    .toFixed(3);
+  const totalAdjustment = products
+    .reduce((acc, product) => acc + parseFloat(product.adjustment || 0), 0)
+    .toFixed(3);
+  const totalFinalWeight = products
+    .reduce((acc, product) => acc + parseFloat(product.final_weight || 0), 0)
+    .toFixed(3);
+  const totalBarcodeWeight = products
+    .reduce((acc, product) => acc + parseFloat(product.barcode_weight || 0), 0)
+    .toFixed(3);
 
+  useEffect(() => {
+    const handleBarcodeScan = (e) => {
+      setShowBarcode((prevData) => prevData + e.key);
 
-  const totalBeforeWeight = products.reduce((acc, product) => acc + parseFloat(product.before_weight || 0), 0).toFixed(3);
-  const totalAfterWeight = products.reduce((acc, product) => acc + parseFloat(product.after_weight || 0), 0).toFixed(3);
-  const totalDifference = products.reduce((acc, product) => acc + parseFloat(product.difference || 0), 0).toFixed(3);
-  const totalAdjustment = products.reduce((acc, product) => acc + parseFloat(product.adjustment || 0), 0).toFixed(3);
-  const totalFinalWeight = products.reduce((acc, product) => acc + parseFloat(product.final_weight || 0), 0).toFixed(3);
-  const totalBarcodeWeight = products.reduce((acc, product) => acc + parseFloat(product.barcode_weight || 0), 0).toFixed(3);
- 
- 
-useEffect(() => {
-  const handleBarcodeScan = (e) => {
- 
-    setShowBarcode((prevData) => prevData + e.key);
- 
-   
-    if (e.key === "Enter") {
-      console.log("Scanned Barcode:", showBarcode);
-      setShowBarcode("");
-    }
-  };
- 
-  window.addEventListener("keydown", handleBarcodeScan);
- 
-  return () => {
-    window.removeEventListener("keydown", handleBarcodeScan);
-  };
-}, [showBarcode]);
- 
+      if (e.key === "Enter") {
+        console.log("Scanned Barcode:", showBarcode);
+        setShowBarcode("");
+      }
+    };
+
+    window.addEventListener("keydown", handleBarcodeScan);
+
+    return () => {
+      window.removeEventListener("keydown", handleBarcodeScan);
+    };
+  }, [showBarcode]);
 
   return (
     <>
       <Navbarr />
- 
+
       <div className="add-items">
         <button onClick={handleAddItems}>Add Items</button>
       </div>
-{/*  
-      <div className="weight">
-        <div className="cont">
-          <label>Bulk Weight Before:</label>
-          <input
-            value={bulkWeightBefore}
-            onChange={(e) => setBulkWeightBefore(e.target.value)}
-          />
-        </div>
-        <div className="cont">
-          <label>Bulk Weight After:</label>
-          <input
-            value={bulkWeightAfter}
-            onChange={(e) => setBulkWeightAfter(e.target.value)}
-          />
-        </div>
-        <button onClick={handleUpdateWeights}>Update</button>
-      </div>
- 
-      <div className="update">
-        <button onClick={handleCalculate}>Calculate</button>
-      </div> */}
- 
+     
       <div className="table-container">
         <div className="list">List of Items</div>
         <Table striped bordered hover className="tab">
@@ -363,14 +297,13 @@ useEffect(() => {
               <th>Net Weight</th>
               <th>Stone Charges</th>
               <th>HUD</th>
-              <th>Length  </th>
-{/*  
-              <th>Barcode Weight</th>
-              <th>Status</th> */}
+              <th>Length </th>
+          
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
- 
+
           <tbody>
             {products.map((product, index) => (
               <tr key={index}>
@@ -402,16 +335,13 @@ useEffect(() => {
                     readOnly
                   />
                 </td>
-                {/* <td>
-                  <input value={product.barcode_weight || ""} readOnly />
-                </td>
+           
                 <td>
                   <input value={product.product_type || ""} readOnly />
-                </td> */}
- 
+                </td>
                 <td>
                   <div className="icon">
-                    {/* {product.product_number} */}
+              
                     <FontAwesomeIcon
                       icon={faEye}
                       onClick={() => openPopup(product.id)}
@@ -431,26 +361,7 @@ useEffect(() => {
                       icon={faTrash}
                       onClick={() => handleDelete(product.id)}
                     />
-                    {/* <button
-                      onClick={() =>
-                        handleGenerateBarcode(product.product_number)
-                      }
-                    >
-                      Generate Barcode
-                    </button>
                  
-                    {showBarcode && selectedProductNo && (
-                      <div ref={barcodeRef} style={{ marginTop: "2rem" }}>
-             
-                        <div
-                          style={{ textAlign: "center", marginBottom: "10px" }}
-                        >
-                          <strong>{product.barcode_weight}</strong>
-                     
-                        </div>
-                        <Barcode value={selectedProductNo} />
-                      </div>
-                    )} */}
                   </div>
                 </td>
               </tr>
@@ -476,16 +387,13 @@ useEffect(() => {
               <td>
                 <b>{totalFinalWeight}</b>
               </td>
-              {/* <td>
-                <b>{totalBarcodeWeight}</b>
-              </td>
-              <td></td> */}
+            
               <td></td>
             </tr>
           </tfoot>
         </Table>
       </div>
- 
+
       {showAddItemsPopup && (
         <div className="popup-1">
           <div className="popup-content">
@@ -548,28 +456,10 @@ useEffect(() => {
                   onKeyDown={(e) => handleKeyDown(e, productNumberRef)}
                 />
               </div>
-              {/* <div>
-                <label>Product Number:</label>
-                <input
-                  value={productNumber}
-                  onChange={(e) => setProductNumber(e.target.value)}
-                  ref={productNumberRef}
-                  onKeyDown={(e) => handleKeyDown(e, productWeightRef)}
-                />
-              </div>
-              <div>
-                <label>Product Weight:</label>
-                <input
-                  value={productWeight}
-                  onChange={(e) => setProductWeight(e.target.value)}
-                  ref={productWeightRef}
-                />
-              </div> */}
+           
             </form>
             <div className="save-button">
               <button onClick={handleSave}>Save</button>
-
-
             </div>
           </div>
         </div>
@@ -578,7 +468,4 @@ useEffect(() => {
   );
 };
 
-
-
- 
 export default Products;
