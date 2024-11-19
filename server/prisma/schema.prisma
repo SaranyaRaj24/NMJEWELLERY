@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+ 
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+ 
+model bills {
+  id          Int          @id @default(autoincrement())
+  bill_number String       @unique
+  bill_name   String?
+  created_at  DateTime     @default(now())
+  billItems   bill_items[]
+}
+ 
+model bill_items {
+  id          Int          @id @default(autoincrement())
+  bill_number String
+  product_id  Int
+  created_at  DateTime     @default(now())
+  bill        bills        @relation(fields: [bill_number], references: [bill_number])
+  productInfo product_info @relation(fields: [product_id], references: [id])
+}
+ 
+model product_info {
+  id             Int          @id @default(autoincrement())
+  tag_number     String
+  before_weight  Float?
+  after_weight   Float?
+  difference     Float?
+  adjustment     Float?
+  final_weight   Float?
+  product_number String?      @unique
+  created_at     DateTime?    @default(now())
+  updated_at     DateTime?    @default(now())
+  productBills   bill_items[]
+  product_type   PRODUCT_TYPE @default(active)
+  barcode_weight Float?
+  lot_id         Int
+  lot_info       lot_info     @relation(fields: [lot_id], references: [id])
+}
+ 
+model lot_info {
+  id                 Int            @id @default(autoincrement())
+  lot_name           String         @unique
+  bulk_weight_before Float?
+  bulk_after_weight  Float?
+  adjustment_percent Int?
+  created_at         DateTime       @default(now())
+  lot_process        LOT_PROCESS    @default(not_completed)
+  products           product_info[]
+}
+ 
+enum LOT_PROCESS {
+  completed
+  not_completed
+}
+ 
+enum PRODUCT_TYPE {
+  hold
+  active
+  sold
+}

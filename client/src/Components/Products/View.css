@@ -1,0 +1,45 @@
+.formmm-containerrr {
+  padding: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.formmm-group {
+  margin-bottom: 10px;
+}
+
+.formmm-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.formmm-group input {
+  padding: 8px;
+  width: 100%;
+}
+
+.savee-buttonn {
+  padding: 10px 20px;
+ 
+  color: #25274D;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+}
+
+
+.name button{
+  font-weight: bold;
+  font-size: 1.1rem;
+  border-radius: 5px;
+  height: 2.2rem;
+  background-color: rgb(36, 36, 66);
+  color: white;
+}
+
+.name button:hover{
+  cursor: pointer;
+  background-color: rgb(61, 61, 107);
+  color: white;    
+}
