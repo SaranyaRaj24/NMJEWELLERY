@@ -254,16 +254,19 @@ const Products = () => {
   };
  
   const handleSave = async () => {
-    if (!beforeWeight && !afterWeight && !productNumber && !productWeight) {
-      alert("Please fill in at least one field before saving.");
-      return;
-    }
+    // if (!beforeWeight && !afterWeight && !productNumber && !productWeight) {
+    //   alert("Please fill in at least one field before saving.");
+    //   return;
+    // }
 
     try {
       const payload = {
         tag_number: lotNumber,
         before_weight: beforeWeight || null,
         after_weight: afterWeight || null,
+        stone_charge:difference|| null,
+        hud:adjustment || null,
+        length:finalWeight || null,
         barcode_weight: productWeight || null,
         lot_id: Number(lot_id),
       };
@@ -326,7 +329,7 @@ useEffect(() => {
       <div className="add-items">
         <button onClick={handleAddItems}>Add Items</button>
       </div>
- 
+{/*  
       <div className="weight">
         <div className="cont">
           <label>Bulk Weight Before:</label>
@@ -347,7 +350,7 @@ useEffect(() => {
  
       <div className="update">
         <button onClick={handleCalculate}>Calculate</button>
-      </div>
+      </div> */}
  
       <div className="table-container">
         <div className="list">List of Items</div>
@@ -356,14 +359,14 @@ useEffect(() => {
             <tr>
               <th>S.No</th>
               <th>Product Number</th>
-              <th>Before Weight</th>
-              <th>After Weight</th>
-              <th>Difference</th>
-              <th>Adjustment</th>
-              <th>Final weight</th>
- 
+              <th>Gross Weight</th>
+              <th>Net Weight</th>
+              <th>Stone Charges</th>
+              <th>HUD</th>
+              <th>Length  </th>
+{/*  
               <th>Barcode Weight</th>
-              <th>Status</th>
+              <th>Status</th> */}
               <th>Actions</th>
             </tr>
           </thead>
@@ -399,12 +402,12 @@ useEffect(() => {
                     readOnly
                   />
                 </td>
-                <td>
+                {/* <td>
                   <input value={product.barcode_weight || ""} readOnly />
                 </td>
                 <td>
                   <input value={product.product_type || ""} readOnly />
-                </td>
+                </td> */}
  
                 <td>
                   <div className="icon">
@@ -473,10 +476,10 @@ useEffect(() => {
               <td>
                 <b>{totalFinalWeight}</b>
               </td>
-              <td>
+              {/* <td>
                 <b>{totalBarcodeWeight}</b>
               </td>
-              <td></td>
+              <td></td> */}
               <td></td>
             </tr>
           </tfoot>
@@ -502,7 +505,7 @@ useEffect(() => {
                 />
               </div>
               <div>
-                <label>Before Weight:</label>
+                <label>Gross Weight:</label>
                 <input
                   value={beforeWeight}
                   onChange={(e) => setBeforeWeight(e.target.value)}
@@ -510,7 +513,7 @@ useEffect(() => {
                 />
               </div>
               <div>
-                <label>After Weight:</label>
+                <label>Net Weight:</label>
                 <input
                   value={afterWeight}
                   onChange={(e) => setAfterWeight(e.target.value)}
@@ -519,7 +522,7 @@ useEffect(() => {
                 />
               </div>
               <div>
-                <label>Difference:</label>
+                <label>Stone Charges:</label>
                 <input
                   value={difference}
                   onChange={(e) => setDifference(e.target.value)}
@@ -528,7 +531,7 @@ useEffect(() => {
                 />
               </div>
               <div>
-                <label>Adjustment:</label>
+                <label>HUD:</label>
                 <input
                   value={adjustment}
                   onChange={(e) => setAdjustment(e.target.value)}
@@ -537,7 +540,7 @@ useEffect(() => {
                 />
               </div>
               <div>
-                <label>Final Weight:</label>
+                <label>Length:</label>
                 <input
                   value={finalWeight}
                   onChange={(e) => setFinalWeight(e.target.value)}
@@ -545,7 +548,7 @@ useEffect(() => {
                   onKeyDown={(e) => handleKeyDown(e, productNumberRef)}
                 />
               </div>
-              <div>
+              {/* <div>
                 <label>Product Number:</label>
                 <input
                   value={productNumber}
@@ -561,7 +564,7 @@ useEffect(() => {
                   onChange={(e) => setProductWeight(e.target.value)}
                   ref={productWeightRef}
                 />
-              </div>
+              </div> */}
             </form>
             <div className="save-button">
               <button onClick={handleSave}>Save</button>
