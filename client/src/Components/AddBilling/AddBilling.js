@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../AddBilling/AddBilling.css";
 import Table from "react-bootstrap/esm/Table";
 import jsPDF from "jspdf";
@@ -29,13 +29,25 @@ const AddBilling = () => {
   };
 
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
+  const fetchBillNo=async ()=>{
+    const response = await axios.get(`http://localhost:5000/bills/bills/`+bill_number).then(res=>{
+      setScannedProducts(res.data.products)
+    }).catch(x=>console.log(x));
+    
+  }
+  useEffect(() => {
+    fetchBillNo()
+  }, [])
+  
+  console.log(scannedProducts,"llll")
 
   const handleScan = async (product_number) => {
     try {
 
     
 
-      const response = await axios.get(`http://localhost:5000/api/products/getSerial/${bill_number}/${product_number}/${bill_type}`);
+      const response = await axios.get(`http://localhost:5000/api/v1/products/getSerial/${bill_number}/${product_number}/${bill_type}`);
+      console.log(response)
 
       if (response.status === 200) {
         setScannedProducts((prevProducts) => [
@@ -93,7 +105,7 @@ const AddBilling = () => {
                 scannedProducts.map((product, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{product.product_number}</td>
+                    <td>{product.product_number}</td> 
                     <td>{product.before_weight}</td>
                     <td>{product.after_weight}</td>
                     <td>{product.difference}</td>
@@ -110,7 +122,7 @@ const AddBilling = () => {
           </Table>
         </div>
         <div className="button-save">
-          <button className="savee">Save</button>
+          {/* <button className="savee">Save</button> */}
           <button className="pdf" onClick={exportPDF}>
             Export as PDF
           </button>
