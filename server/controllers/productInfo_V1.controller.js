@@ -10,9 +10,9 @@ const createNewProduct = async (req, res) => {
       after_weight = 0,
       product_number,
       stone_charge,
-        hud,
-        length,
-        
+      hud,
+      length,
+
       lot_id = "",
       barcode_weight = 0,
     } = req.body;
@@ -25,9 +25,9 @@ const createNewProduct = async (req, res) => {
         tag_number,
         before_weight: weight1,
         after_weight: weight2,
-        difference:parseFloat(stone_charge),
-        adjustment:parseFloat(hud),
-        final_weight:parseFloat(length),
+        difference: parseFloat(stone_charge),
+        adjustment: parseFloat(hud),
+        final_weight: parseFloat(length),
         barcode_weight: parseFloat(barcode_weight),
         product_number: tag_number + Math.random(4) * 1000,
         lot_id,
@@ -113,7 +113,7 @@ const getProductByNumber = async (req, res) => {
     const product = await prisma.product_info.findMany({
       where: {
         product_number,
-        product_type: "active",
+        // product_type: "active",
         // lot_info: { lot_process: "completed" },
       },
       select: {
@@ -132,25 +132,10 @@ const getProductByNumber = async (req, res) => {
     if (product.length === 0) {
       return res.status(500).json({ msg: "Product not found" });
     }
-    const updateProduct = await prisma.product_info.updateMany({
-      where: {
-        id: product[0].id,
-      },
-      data: {
-        product_type: billing_type,
-      },
-    });
-    const billItem = await prisma.bill_items.create({
-      data: {
-        bill_number,
-        product_id: product[0].id,
-        created_at: new Date(),
-      },
-    });
 
     res.status(200).json({
       message: "Product found",
-      product:product[0],
+      product: product[0],
     });
   } catch (error) {
     console.log(error);
@@ -273,14 +258,25 @@ const restoreProductByNumber = async (req, res) => {
 const UpdatingProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { before_weight, after_weight, barcode_weight } = req.body;
+    const {
+      before_weight,
+      after_weight,
+      barcode_weight,
+      hud,
+      length,
+      product_number,
+      stone_charge,
+    } = req.body;
 
     const updateProduct = await prisma.product_info.update({
       where: { id: parseInt(id) },
       data: {
         before_weight,
         after_weight,
-        barcode_weight: parseFloat(barcode_weight),
+        difference: stone_charge,
+        adjustment: hud,
+        final_weight: length,
+        product_number: product_number,
         updated_at: new Date(),
       },
     });

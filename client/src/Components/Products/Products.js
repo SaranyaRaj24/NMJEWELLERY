@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark, faTrash, faEye } from "@fortawesome/free-solid-svg-icons";
 import Table from "react-bootstrap/Table";
 import { useParams, useLocation } from "react-router-dom";
-
 import "../Products/Products.css";
 import WeightFormPopup from "./View";
 import Navbarr from "../Navbarr/Navbarr";
@@ -25,6 +24,7 @@ const Products = () => {
   const [bulkWeightBefore, setBulkWeightBefore] = useState("");
   const [bulkWeightAfter, setBulkWeightAfter] = useState("");
   const [beforeWeight, setBeforeWeight] = useState("");
+  const [stonecharge, setStoneCharge] = useState("");
   const [afterWeight, setAfterWeight] = useState("");
   const [productNumber, setProductNumber] = useState("");
   const [productWeight, setProductWeight] = useState("");
@@ -193,6 +193,7 @@ const Products = () => {
         const firstProduct = calculatedProducts[0];
         setBeforeWeight(firstProduct.before_weight || "");
         setAfterWeight(firstProduct.after_weight || "");
+
         setDifference(firstProduct.difference?.toFixed(3) || "");
         setAdjustment(firstProduct.adjustment?.toFixed(3) || "");
         setFinalWeight(firstProduct.final_weight?.toFixed(2) || "");
@@ -209,8 +210,6 @@ const Products = () => {
   };
 
   const handleSave = async () => {
-    
-
     try {
       const payload = {
         tag_number: lotNumber,
@@ -257,8 +256,8 @@ const Products = () => {
   const totalFinalWeight = products
     .reduce((acc, product) => acc + parseFloat(product.final_weight || 0), 0)
     .toFixed(3);
-  const totalBarcodeWeight = products
-    .reduce((acc, product) => acc + parseFloat(product.barcode_weight || 0), 0)
+  const totalstone_charge = products
+    .reduce((acc, product) => acc + parseFloat(product.stone_charge || 0), 0)
     .toFixed(3);
 
   useEffect(() => {
@@ -278,6 +277,16 @@ const Products = () => {
     };
   }, [showBarcode]);
 
+  const updateProductList = (updatedProduct) => {
+    setProducts((prevProducts) => {
+      const updatedProducts = prevProducts.map((product) =>
+        product.id === updatedProduct.id ? updatedProduct : product
+      );
+      console.log("Updated products:", updatedProducts);
+      return updatedProducts;
+    });
+  };
+
   return (
     <>
       <Navbarr />
@@ -285,7 +294,18 @@ const Products = () => {
       <div className="add-items">
         <button onClick={handleAddItems}>Add Items</button>
       </div>
-     
+
+      {showPopup.id && (
+        <WeightFormPopup
+          showPopup={showPopup.id}
+          closePopup={closePopup}
+          productId={showPopup.id}
+          product={products.find((p) => p.id === showPopup.id)}
+          productInfo={products.find((p) => p.id === showPopup.id)}
+          updateProductList={updateProductList}
+        />
+      )}
+
       <div className="table-container">
         <div className="list">List of Items</div>
         <Table striped bordered hover className="tab">
@@ -295,10 +315,10 @@ const Products = () => {
               <th>Product Number</th>
               <th>Gross Weight</th>
               <th>Net Weight</th>
-              <th>Stone Charges</th>
+              <th>Stone Weight</th>
               <th>HUD</th>
               <th>Length </th>
-          
+
               <th>Status</th>
               <th>Actions</th>
             </tr>
@@ -317,6 +337,7 @@ const Products = () => {
                 <td>
                   <input value={product.after_weight || ""} readOnly />
                 </td>
+
                 <td>
                   <input
                     value={product.difference?.toFixed(3) || ""}
@@ -335,13 +356,12 @@ const Products = () => {
                     readOnly
                   />
                 </td>
-           
+
                 <td>
                   <input value={product.product_type || ""} readOnly />
                 </td>
                 <td>
                   <div className="icon">
-              
                     <FontAwesomeIcon
                       icon={faEye}
                       onClick={() => openPopup(product.id)}
@@ -354,14 +374,13 @@ const Products = () => {
                       productInfo={{
                         before_weight: product.before_weight,
                         after_weight: product.after_weight,
-                        barcode_weight: product.barcode_weight,
+                        difference: product.difference,
+                        adjustment: product.adjustment,
+                        final_weight: product.final_weight,
+                        product_number: product.product_number,
                       }}
                     />
-                    <FontAwesomeIcon
-                      icon={faTrash}
-                      onClick={() => handleDelete(product.id)}
-                    />
-                 
+                  
                   </div>
                 </td>
               </tr>
@@ -370,7 +389,7 @@ const Products = () => {
           <tfoot>
             <tr>
               <td colSpan="2">
-                <b>Total Weight = </b>
+                <b>Total Weight </b>
               </td>
               <td>
                 <b>{totalBeforeWeight}</b>
@@ -387,8 +406,8 @@ const Products = () => {
               <td>
                 <b>{totalFinalWeight}</b>
               </td>
+
             
-              <td></td>
             </tr>
           </tfoot>
         </Table>
@@ -430,7 +449,7 @@ const Products = () => {
                 />
               </div>
               <div>
-                <label>Stone Charges:</label>
+                <label>Stone Weight:</label>
                 <input
                   value={difference}
                   onChange={(e) => setDifference(e.target.value)}
@@ -456,7 +475,6 @@ const Products = () => {
                   onKeyDown={(e) => handleKeyDown(e, productNumberRef)}
                 />
               </div>
-           
             </form>
             <div className="save-button">
               <button onClick={handleSave}>Save</button>

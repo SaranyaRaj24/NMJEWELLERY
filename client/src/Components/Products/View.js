@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
 import "../Products/View.css";
 import jsPDF from "jspdf";
 import Barcode from "react-qr-code";
 import html2canvas from "html2canvas";
+import Button from "@mui/material/Button";
 
 const WeightFormPopup = ({
   showPopup,
@@ -13,10 +14,14 @@ const WeightFormPopup = ({
   productInfo,
   updateProductList,
 }) => {
+  console.log(productInfo);
   const [beforeWeight, setBeforeWeight] = useState(productInfo.before_weight);
   const [afterWeight, setAfterWeight] = useState(productInfo.after_weight);
-  const [barcodeWeight, setBarcodeWeight] = useState(
-    productInfo.barcode_weight
+  const [stone_charge, setStoneCharge] = useState(productInfo.difference);
+  const [hud, sethud] = useState(productInfo.adjustment);
+  const [length, setlength] = useState(productInfo.final_weight);
+  const [product_number, setProductNumber] = useState(
+    productInfo.product_number
   );
   const [showBarcode, setShowBarcode] = useState(false);
   const [selectedProductNo, setSelectedProductNo] = useState(null);
@@ -47,7 +52,6 @@ const WeightFormPopup = ({
         const pdfBlob = pdf.output("blob");
         const pdfUrl = URL.createObjectURL(pdfBlob);
 
-        // Open the generated PDF in a new tab
         window.open(pdfUrl, "_blank");
       } catch (error) {
         console.error("Error exporting barcode as PDF:", error);
@@ -60,13 +64,31 @@ const WeightFormPopup = ({
       const updatedData = {
         before_weight: parseFloat(beforeWeight),
         after_weight: parseFloat(afterWeight),
-        barcode_weight: parseFloat(barcodeWeight),
+        stone_charge: parseFloat(stone_charge),
+        hud: parseFloat(hud),
+        length: parseFloat(length),
+        product_number: product_number,
       };
-      await axios.put(
+
+      const net = await axios.put(
         `http://localhost:5000/api/v1/products/update/${productId}`,
         updatedData
       );
-      updateProductList();
+      console.log(net, "ttttttttttttttttt");
+     
+      const updatedProduct = {
+        ...product,
+        before_weight: updatedData.before_weight,
+        after_weight: updatedData.after_weight,
+        stone_charge: updatedData.stone_charge,
+        hud: updatedData.hud,
+        stone_charge: updatedData.stone_charge,
+      };
+
+ 
+      alert("Product updated successfully!");
+     
+      window.location.reload();
       closePopup();
     } catch (error) {
       console.error("Error updating product:", error);
@@ -84,64 +106,157 @@ const WeightFormPopup = ({
           </div>
           <form className="in-position">
             <div>
-              <label>Before Weight:</label>
+              <label>Gross Weight:</label>
               <input
                 type="number"
                 value={beforeWeight}
                 onChange={(e) => setBeforeWeight(e.target.value)}
-                placeholder="Enter Before Weight"
+                placeholder="Enter Gross Weight"
               />
             </div>
             <div>
-              <label>After Weight:</label>
+              <label>Net Weight:</label>
               <input
                 type="number"
                 value={afterWeight}
                 onChange={(e) => setAfterWeight(e.target.value)}
-                placeholder="Enter After Weight"
+                placeholder="Enter Net Weight"
               />
             </div>
             <div>
-              <label>Barcode Weight:</label>
+              <label>Stone Weight:</label>
               <input
                 type="number"
-                value={barcodeWeight}
-                onChange={(e) => setBarcodeWeight(e.target.value)}
-                placeholder="Enter Barcode Weight"
+                value={stone_charge}
+                onChange={(e) => setStoneCharge(e.target.value)}
+                placeholder="Enter Stone Weight"
+              />
+            </div>
+            <div>
+              <label>HUD:</label>
+              <input
+                type="number"
+                value={hud}
+                onChange={(e) => sethud(e.target.value)}
+                placeholder="Enter HUD"
+              />
+            </div>
+            <div>
+              <label>Length:</label>
+              <input
+                type="number"
+                value={length}
+                onChange={(e) => setlength(e.target.value)}
+                placeholder="Enter Length"
+              />
+            </div>
+            <div>
+              <label>Product Number:</label>
+              <input
+                type="text"
+                value={product_number}
+                onChange={(e) => setProductNumber(e.target.value)}
+                placeholder="Enter Product Number"
               />
             </div>
           </form>
-          <div className="savee-buttonn">
-            <button onClick={handleSave}>Save</button>
-            <button
-              onClick={() => handleGenerateBarcode(product.product_number)}
+          <br></br>
+          <div
+            className="button-group"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "10px",
+            }}
+          >
+            <Button
+              onClick={handleSave}
+              variant="contained"
+              size="small"
+              style={{
+                backgroundColor: "#25274D",
+                color: "white",
+                width: "20%",
+              }}
             >
-              Generate Barcode
-            </button>
-            <button onClick={handleExportPdf}>Export as PDF </button>
+              Save
+            </Button>
+            <br></br>
 
-            {showBarcode && (
+            <div style={{ display: "flex", gap: "10px" }}>
+              <Button
+                onClick={() => handleGenerateBarcode(product.product_number)}
+                variant="contained"
+                size="small"
+                style={{ backgroundColor: "#25274D", color: "white" }}
+              >
+                Generate QR
+              </Button>
+              <Button
+                onClick={handleExportPdf}
+                variant="contained"
+                size="small"
+                style={{ backgroundColor: "#25274D", color: "white" }}
+              >
+                Export as PDF
+              </Button>
+            </div>
+          </div>
+          <div></div>
+          {showBarcode && (
+            <div
+              ref={barcodeRef}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: "3rem",
+              }}
+            >
               <div
-                ref={barcodeRef}
                 style={{
                   display: "flex",
+                  justifyContent: "center",
                   alignItems: "center",
-                  marginTop: "1rem",
-                 
-                  // backgroundColor:'blue'
                 }}
               >
-                <div style={{display:'flex',justifyContent:"center",alignItems:"center"}}> 
-                <div style={{ marginRight:'3rem', fontSize: "20px" ,fontWeight:'bold',height:'40px',display:"flex",flexDirection:"column"}}><span>Navamithra</span><span>Jewellery</span></div>
-                <Barcode value={selectedProductNo || ""} size={80}  /> </div>
-                <div style={{  fontSize: "18px",marginLeft:'2rem' , fontWeight:'bold'}}>
-                  <div>GW: {beforeWeight}</div>
-                  <div>NW: {afterWeight}</div>
-                  <div>SGG3</div>
+                <div
+                  style={{
+                    marginRight: "10rem",
+                    fontSize: "35px",
+                    fontWeight: "bolder",
+                    height: "40px",
+                    display: "flex",
+                    flexDirection: "column",
+                    marginBottom: "3rem",
+                    marginLeft:"-60px"
+                  }}
+                >
+                  <span >NMC</span>
+
+                  <span>{product_number}</span>
                 </div>
               </div>
-            )}
-          </div>
+              <div
+                style={{
+                  fontSize: "20px",
+                  marginLeft: "1rem",
+                  fontWeight: "bolder",
+                  display: "flex",
+                  gap:"12px",
+                  marginLeft:"-80px"
+                }}
+              >
+                <Barcode value={selectedProductNo || ""} size={80} />
+                <div>
+                  <div>GW: {beforeWeight}</div>
+                  <div>NW: {afterWeight}</div>
+                  <div>SW: {stone_charge}</div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     )
@@ -149,7 +264,3 @@ const WeightFormPopup = ({
 };
 
 export default WeightFormPopup;
-
-
-
-

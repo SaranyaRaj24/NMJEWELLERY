@@ -42,7 +42,8 @@
     width: 80rem;
     margin-left: 6rem;
     padding: 2rem;
-    margin-top: 8rem;
+    position: relative;
+    top: 11rem;
     overflow-x: auto; 
     height: auto; 
     
@@ -85,9 +86,16 @@ h2 {
     color: white;
 }
 
-.button-save{
-    display: flex;
-    gap: 2rem;
+ .button-save {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+}
+.bill-name-input {
+  padding: 5px;
+  font-size: 16px;
+  margin-top:2rem;
+  margin-left: 5rem;
 }
 
 .add-tab {
@@ -111,3 +119,19 @@ h2 {
     text-align: center;
 }
 
+.pdf-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bill-name-input {
+  padding: 5px;
+  font-size: 14px;
+  width: 200px;
+}
+
+.pdf {
+  padding: 10px 20px;
+  font-size: 14px;
+}

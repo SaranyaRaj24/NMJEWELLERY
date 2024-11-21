@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import "../Billing/Billing.css";
 import { useNavigate } from "react-router-dom";
@@ -23,36 +22,24 @@ const Billing = () => {
     fetchBills();
   }, []);
 
-  const deleteProduct = async (id) => {
-    try {
-      const response = await axios.delete(
-        `http://localhost:5000/bills/delete/${id}`
-      );
-      if (response.status === 200) {
-        alert("Bill deleted successfully");
-        setBills((prevBills) => prevBills.filter((bill) => bill.id !== id));
-      }
-    } catch (error) {
-      console.error("Error deleting bill:", error);
-    }
-  };
+  // const deleteProduct = async (id) => {
+  //   try {
+  //     const response = await axios.delete(
+  //       `http://localhost:5000/bills/delete/${id}`
+  //     );
+  //     if (response.status === 200) {
+  //       alert("Bill deleted successfully");
+  //       setBills((prevBills) => prevBills.filter((bill) => bill.id !== id));
+  //     }
+  //   } catch (error) {
+  //     console.error("Error deleting bill:", error);
+  //   }
+  // };
 
-  
   const handleAddBill = async (billType) => {
     try {
-      const response = await axios.post("http://localhost:5000/bills/create", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const newBill = response.data;
-      const { bill_number, created_at } = newBill;
-  
-      navigate(`/billing/${bill_number}/add/${billType}`);
-      setBills((prevBills) => [
-        ...prevBills,
-        { bill_number, created_at: new Date(created_at).toLocaleString() },
-      ]);
+      navigate(`/billing/bill`);
+      setBills((prevBills) => [...prevBills]);
     } catch (error) {
       console.error("Error creating a new bill:", error);
     }
@@ -65,10 +52,8 @@ const Billing = () => {
         <button onClick={() => handleAddBill("customer")}>
           Add New Bill Customer
         </button>
-        <button onClick={() => handleAddBill("party")}>
-          Add New Bill Party
-        </button>
-        <button>Restore</button>
+
+        <button onClick={() => navigate("/restore")}>Restore</button>
       </div>
 
       <div className="tab-container">
@@ -88,13 +73,21 @@ const Billing = () => {
                 <td>{bill.created_at}</td>
                 <td>{bill.bill_number}</td>
                 <td>
-                  <Link to={`/billing/${bill.bill_number}/add`}>
-                    <button>View</button>
+                  <Link to={`/billing/${bill.bill_number}`}>
+                    <button
+                      style={{
+                        backgroundColor: "#25274D",
+                        color: "white",
+                        fontSize: "1rem",
+                      }}
+                    >
+                      View
+                    </button>
                   </Link>
-                  <button onClick={() => deleteProduct(bill.id)}>
+                  {/* <button onClick={() => deleteProduct(bill.id)}>
                     {" "}
                     Delete
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             ))}

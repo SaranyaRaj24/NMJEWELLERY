@@ -1,5 +1,5 @@
 .bill-position{
-    margin-top: 5rem;
+    margin-top: 2rem;
     margin-left:5rem;
     font-weight: bold;
     font-size: 1.1rem;
@@ -47,7 +47,9 @@ input{
     display: flex;
     gap: 1rem;
     padding-left: 6.5rem;
-   margin-top: 8rem;
+    margin-top: 3rem;
+  
+
 
 }
 

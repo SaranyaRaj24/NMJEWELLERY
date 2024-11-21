@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
   TextField,
@@ -20,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../Home/Home.css";
 import Navbarr from "../Navbarr/Navbarr";
- 
+
 const RoundedTextField = styled(TextField)({
   maxWidth: 300,
   backgroundColor: "#f9f9f9",
@@ -39,10 +40,12 @@ const RoundedTextField = styled(TextField)({
     },
   },
 });
- 
+
+
 const StyledCard = styled(Card)({
-  backgroundColor: "#e3f2fd",
+  backgroundColor: "#25274D", 
   borderRadius: "15px",
+  border: "1px solid #ffffff", 
   boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
   width: "180px",
   margin: "10px",
@@ -50,13 +53,13 @@ const StyledCard = styled(Card)({
     boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.2)",
   },
 });
- 
+
 const StyledButton = styled(Button)({
   borderRadius: "20px",
   padding: "8px 20px",
   fontSize: "16px",
 });
- 
+
 const StyledDialog = styled(Dialog)({
   "& .MuiDialog-paper": {
     padding: "20px",
@@ -64,7 +67,7 @@ const StyledDialog = styled(Dialog)({
     backgroundColor: "#fff",
   },
 });
- 
+
 function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [open, setOpen] = useState(false);
@@ -73,9 +76,9 @@ function Home() {
   const [successMessage, setSuccessMessage] = useState("");
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState(null);
- 
+
   const navigate = useNavigate();
- 
+
   useEffect(() => {
     const fetchLots = async () => {
       try {
@@ -95,26 +98,23 @@ function Home() {
         setLotNumbers([]);
       }
     };
- 
+
     fetchLots();
   }, []);
- 
+
   const handleClickOpen = () => {
     setOpen(true);
   };
- 
+
   const handleClose = () => {
     setOpen(false);
     setLotNumber("");
   };
- 
+
   const handleLotNumberChange = (e) => {
-    const value = e.target.value.toUpperCase();
-    if (value === "" || /^[A-Z]{1}\d{0,2}$/.test(value)) {
-      setLotNumber(value);
-    }
+    setLotNumber(e.target.value);
   };
- 
+
   const handleSaveLotNumber = async () => {
     if (lotNumber) {
       try {
@@ -130,19 +130,18 @@ function Home() {
             }),
           }
         );
- 
+
         const result = await response.json();
- 
+
         console.log("Save Response:", result);
- 
+
         if (response.ok) {
           const newLot = {
             id: result.newLot.id,
             lot_name: lotNumber,
           };
- 
+
           setLotNumbers((prev) => [...prev, newLot]);
-          console.log("jjjjjjjjjjjj" ,newLot)
           setSuccessMessage("Lot created successfully!");
           setLotNumber("");
           handleClose();
@@ -151,19 +150,19 @@ function Home() {
           setSuccessMessage(result.msg || "Error creating lot.");
         }
       } catch (error) {
-        console.error("Failed to save Lot No:", error);
-        setSuccessMessage("Failed to save Lot No.");
+        console.error("Failed to save Lot Name:", error);
+        setSuccessMessage("Failed to save Lot Name.");
       }
     } else {
       setSuccessMessage("Lot Name is required.");
     }
   };
- 
+
   const handleDeleteLotNumber = (index) => {
     setDeleteIndex(index);
     setDeleteConfirmationOpen(true);
   };
- 
+
   const confirmDelete = () => {
     const updatedLotNumbers = [...lotNumbers];
     updatedLotNumbers.splice(deleteIndex, 1);
@@ -171,24 +170,24 @@ function Home() {
     setDeleteConfirmationOpen(false);
     setSuccessMessage("Lot deleted successfully");
   };
- 
+
   const handleCloseSnackbar = () => {
     setSuccessMessage("");
   };
- 
+
   const handleCloseDeleteDialog = () => {
     setDeleteConfirmationOpen(false);
     setDeleteIndex(null);
   };
- 
+
   const handleViewLotDetails = (lot_id, lot_name) => {
     navigate(`/products/${lot_id}?lotname=${lot_name}`);
   };
- 
+
   const filteredLotNumbers = lotNumbers.filter((lot) =>
     lot.lot_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
- 
+
   return (
     <>
       <Navbarr />
@@ -202,30 +201,29 @@ function Home() {
       >
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <RoundedTextField
-            label="Search Lot No"
+            label="Search Lot Name"
             variant="outlined"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search Lot No"
+            placeholder="Search Lot Name"
             fullWidth
           />
-          <IconButton sx={{ ml: 1 }} onClick={handleClickOpen}>
+          <IconButton sx={{ ml: 1 }} disableRipple onClick={handleClickOpen}>
             <RiAddCircleFill
               style={{ marginTop: "9rem", marginLeft: "5rem" }}
               size={30}
-              color="#1976d2"
+              color="#25274D"
             />
           </IconButton>
         </Box>
- 
- 
+
         <Dialog open={open} onClose={handleClose}>
-          <DialogTitle>Add Lot No</DialogTitle>
+          <DialogTitle>Add Lot Name</DialogTitle>
           <DialogContent>
             <TextField
               autoFocus
               margin="dense"
-              label="Lot No"
+              label="Lot Name"
               type="text"
               fullWidth
               variant="outlined"
@@ -246,7 +244,7 @@ function Home() {
             </Button>
           </DialogActions>
         </Dialog>
- 
+
         <StyledDialog
           open={deleteConfirmationOpen}
           onClose={handleCloseDeleteDialog}
@@ -259,7 +257,7 @@ function Home() {
           </DialogTitle>
           <DialogContent>
             <Typography variant="body1" sx={{ mb: 2 }}>
-              Are you sure you want to delete this Lot No?
+              Are you sure you want to delete this Lot Name
             </Typography>
           </DialogContent>
           <DialogActions>
@@ -279,8 +277,7 @@ function Home() {
             </StyledButton>
           </DialogActions>
         </StyledDialog>
- 
-     
+
         <Box
           sx={{
             display: "flex",
@@ -298,7 +295,7 @@ function Home() {
                     variant="h6"
                     sx={{
                       fontWeight: "bold",
-                      color: "#0d47a1",
+                      color: "white", 
                       mb: 1,
                       fontSize: "1.2rem",
                     }}
@@ -314,14 +311,13 @@ function Home() {
                     }}
                   >
                     <IconButton onClick={() => handleDeleteLotNumber(index)}>
-                      <RiDeleteBin6Line size={20} color="red" />
+                      <RiDeleteBin6Line size={25} color="White" />
                     </IconButton>
                     <IconButton
-                      onClick={() =>
-                        handleViewLotDetails(lot.id, lot.lot_name)
-                      }
+                      onClick={() => handleViewLotDetails(lot.id, lot.lot_name)}
                     >
-                      <RiEyeLine size={20} color="blue" />
+                      <RiEyeLine size={25} color="white" />{" "}
+                     
                     </IconButton>
                   </Box>
                 </CardContent>
@@ -329,28 +325,23 @@ function Home() {
             ))
           ) : (
             <Typography variant="body1" color="textSecondary">
-              No Lot numbers available.
+              No Lot name available.
             </Typography>
           )}
         </Box>
- 
-        <Snackbar
-          open={!!successMessage}
-          autoHideDuration={6000}
-          onClose={handleCloseSnackbar}
-        >
-          <Alert
-            onClose={handleCloseSnackbar}
-            severity={successMessage.includes("Error") ? "error" : "success"}
-            sx={{ width: "100%" }}
-          >
-            {successMessage}
-          </Alert>
-        </Snackbar>
       </Box>
+
+      <Snackbar
+        open={Boolean(successMessage)}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="success">
+          {successMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
- 
+
 export default Home;
- 
