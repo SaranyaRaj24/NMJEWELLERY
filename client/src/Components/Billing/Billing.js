@@ -62,16 +62,16 @@ const Billing = () => {
             <tr>
               <th>S.No</th>
               <th>Created at</th>
-              <th>Bill Number</th>
+              <th>Bill Name</th>
               <th>View</th>
             </tr>
           </thead>
           <tbody>
             {bills.map((bill, index) => (
               <tr key={bill.bill_number}>
-                <td>{index + 1}</td>
+                <td>{bill.id}</td>
                 <td>{bill.created_at}</td>
-                <td>{bill.bill_number}</td>
+                <td>{bill.bill_name}</td>
                 <td>
                   <Link to={`/billing/${bill.bill_number}`}>
                     <button

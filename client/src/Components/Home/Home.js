@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   TextField,
@@ -41,11 +40,10 @@ const RoundedTextField = styled(TextField)({
   },
 });
 
-
 const StyledCard = styled(Card)({
-  backgroundColor: "#25274D", 
+  backgroundColor: "#25274D",
   borderRadius: "15px",
-  border: "1px solid #ffffff", 
+  border: "1px solid #ffffff",
   boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
   width: "180px",
   margin: "10px",
@@ -295,7 +293,7 @@ function Home() {
                     variant="h6"
                     sx={{
                       fontWeight: "bold",
-                      color: "white", 
+                      color: "white",
                       mb: 1,
                       fontSize: "1.2rem",
                     }}
@@ -305,19 +303,18 @@ function Home() {
                   <Box
                     sx={{
                       display: "flex",
-                      justifyContent: "space-between",
+                      justifyContent: "center",
                       alignItems: "center",
                       px: 2,
                     }}
                   >
                     <IconButton onClick={() => handleDeleteLotNumber(index)}>
-                      <RiDeleteBin6Line size={25} color="White" />
+                      {/* <RiDeleteBin6Line size={25} color="White" /> */}
                     </IconButton>
                     <IconButton
                       onClick={() => handleViewLotDetails(lot.id, lot.lot_name)}
                     >
-                      <RiEyeLine size={25} color="white" />{" "}
-                     
+                      <RiEyeLine style={{}} size={25} color="white" />{" "}
                     </IconButton>
                   </Box>
                 </CardContent>

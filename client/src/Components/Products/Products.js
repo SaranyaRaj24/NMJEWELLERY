@@ -7,6 +7,8 @@ import { useParams, useLocation } from "react-router-dom";
 import "../Products/Products.css";
 import WeightFormPopup from "./View";
 import Navbarr from "../Navbarr/Navbarr";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const Products = () => {
   const { lot_id } = useParams();
@@ -29,12 +31,15 @@ const Products = () => {
   const [productNumber, setProductNumber] = useState("");
   const [productWeight, setProductWeight] = useState("");
   const [finalWeight, setFinalWeight] = useState("");
+  const [billName, setBillName] = useState("");
+  const [product_no, setproduct_no] = useState("");
   const [difference, setDifference] = useState("");
   const [adjustment, setAdjustment] = useState("");
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [status, setStatus] = useState("");
 
   const [showPopup, setShowPopup] = useState({ id: null, value: false });
+  const [filterOpt, setFilterOpt] = useState("all");
 
   const afterWeightRef = useRef(null);
   const differenceRef = useRef(null);
@@ -130,6 +135,19 @@ const Products = () => {
     }
   };
 
+  const exportPDF = async () => {
+    const input = document.getElementById("page-to-pdf");
+    const canvas = await html2canvas(input);
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF();
+    const imgWidth = 190;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+
+    const pdfName = billName.trim() ? `${billName}.pdf` : "billing_details.pdf";
+    pdf.save(pdfName);
+  };
   const handleUpdateWeights = async () => {
     console.log(bulkWeightAfter, bulkWeightBefore, "oooooooooooo");
 
@@ -219,6 +237,7 @@ const Products = () => {
         hud: adjustment || null,
         length: finalWeight || null,
         barcode_weight: productWeight || null,
+        product_no: product_no || null,
         lot_id: Number(lot_id),
       };
 
@@ -240,25 +259,6 @@ const Products = () => {
       alert("There was an error saving the product.");
     }
   };
-
-  const totalBeforeWeight = products
-    .reduce((acc, product) => acc + parseFloat(product.before_weight || 0), 0)
-    .toFixed(3);
-  const totalAfterWeight = products
-    .reduce((acc, product) => acc + parseFloat(product.after_weight || 0), 0)
-    .toFixed(3);
-  const totalDifference = products
-    .reduce((acc, product) => acc + parseFloat(product.difference || 0), 0)
-    .toFixed(3);
-  const totalAdjustment = products
-    .reduce((acc, product) => acc + parseFloat(product.adjustment || 0), 0)
-    .toFixed(3);
-  const totalFinalWeight = products
-    .reduce((acc, product) => acc + parseFloat(product.final_weight || 0), 0)
-    .toFixed(3);
-  const totalstone_charge = products
-    .reduce((acc, product) => acc + parseFloat(product.stone_charge || 0), 0)
-    .toFixed(3);
 
   useEffect(() => {
     const handleBarcodeScan = (e) => {
@@ -287,12 +287,54 @@ const Products = () => {
     });
   };
 
+  const filterProducts = products.filter((item) => {
+    if (filterOpt === "all") {
+      return true;
+    } else if (filterOpt === "active") {
+      return item.product_type === "active";
+    } else if (filterOpt === "sold") {
+      return item.product_type === "sold";
+    } else {
+      return item.product_type === "hold";
+    }
+  });
+
+  const totalBeforeWeight = filterProducts
+    .reduce((acc, product) => acc + parseFloat(product.before_weight || 0), 0)
+    .toFixed(3);
+  const totalAfterWeight = filterProducts
+    .reduce((acc, product) => acc + parseFloat(product.after_weight || 0), 0)
+    .toFixed(3);
+  const totalDifference = filterProducts
+    .reduce((acc, product) => acc + parseFloat(product.difference || 0), 0)
+    .toFixed(3);
+  const totalAdjustment = filterProducts
+    .reduce((acc, product) => acc + parseFloat(product.adjustment || 0), 0)
+    .toFixed(3);
+  const totalFinalWeight = filterProducts
+    .reduce((acc, product) => acc + parseFloat(product.final_weight || 0), 0)
+    .toFixed(3);
+  const totalstone_charge = filterProducts
+    .reduce((acc, product) => acc + parseFloat(product.stone_charge || 0), 0)
+    .toFixed(3);
   return (
     <>
       <Navbarr />
 
       <div className="add-items">
         <button onClick={handleAddItems}>Add Items</button>
+        {/* <input type=""></input> */}
+        <select style={{marginLeft:"2rem"}}
+          id="cars"
+          name="cars"
+          value={filterOpt}
+          onChange={(e) => setFilterOpt(e.target.value)}
+        >
+          <option value="all">All</option>
+          <option value="active">In-Stock</option>
+          <option value="sold">Sold</option>
+          <option value="hold">Hold</option>
+        </select>
       </div>
 
       {showPopup.id && (
@@ -305,114 +347,128 @@ const Products = () => {
           updateProductList={updateProductList}
         />
       )}
+      <div id="page-to-pdf">
+        <div className="table-container">
+          <div className="list">List of Items</div>
+          <Table striped bordered hover className="tab">
+            <thead>
+              <tr>
+                <th>S.No</th>
+                <th>Product Number</th>
+                <th>Gross Weight</th>
+                <th>Net Weight</th>
+                <th>Stone Charges</th>
+                <th>HUD</th>
+                <th>Length </th>
 
-      <div className="table-container">
-        <div className="list">List of Items</div>
-        <Table striped bordered hover className="tab">
-          <thead>
-            <tr>
-              <th>S.No</th>
-              <th>Product Number</th>
-              <th>Gross Weight</th>
-              <th>Net Weight</th>
-              <th>Stone Charges</th>
-              <th>HUD</th>
-              <th>Length </th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
 
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+            <tbody>
+              {filterProducts.map((product, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>
+                    <input value={product.product_number} readOnly />
+                  </td>
+                  <td>
+                    <input value={product.before_weight || ""} readOnly />
+                  </td>
+                  <td>
+                    <input value={product.after_weight || ""} readOnly />
+                  </td>
 
-          <tbody>
-            {products.map((product, index) => (
-              <tr key={index}>
-                <td>{index + 1}</td>
-                <td>
-                  <input value={product.product_number} readOnly />
-                </td>
-                <td>
-                  <input value={product.before_weight || ""} readOnly />
-                </td>
-                <td>
-                  <input value={product.after_weight || ""} readOnly />
-                </td>
-
-                <td>
-                  <input
-                    value={product.difference?.toFixed(3) || ""}
-                    readOnly
-                  />
-                </td>
-                <td>
-                  <input
-                    value={product.adjustment?.toFixed(3) || ""}
-                    readOnly
-                  />
-                </td>
-                <td>
-                  <input
-                    value={product.final_weight?.toFixed(3) || ""}
-                    readOnly
-                  />
-                </td>
-
-                <td>
-                  <input value={product.product_type || ""} readOnly />
-                </td>
-                <td>
-                  <div className="icon">
-                    <FontAwesomeIcon
-                      icon={faEye}
-                      onClick={() => openPopup(product.id)}
+                  <td>
+                    <input
+                      value={product.difference?.toFixed(3) || ""}
+                      readOnly
                     />
-                    <WeightFormPopup
-                      showPopup={showPopup.id === product.id ? true : false}
-                      closePopup={closePopup}
-                      productId={product.id}
-                      product={product}
-                      productInfo={{
-                        before_weight: product.before_weight,
-                        after_weight: product.after_weight,
-                        difference: product.difference,
-                        adjustment: product.adjustment,
-                        final_weight: product.final_weight,
-                        product_number: product.product_number,
-                      }}
+                  </td>
+                  <td>
+                    <input
+                      value={product.adjustment?.toFixed(3) || ""}
+                      readOnly
                     />
-                  
-                  </div>
+                  </td>
+                  <td>
+                    <input
+                      value={product.final_weight?.toFixed(3) || ""}
+                      readOnly
+                    />
+                  </td>
+
+                  <td>
+                    <input
+                      value={
+                        (product.product_type === "active"
+                          ? "In-Stock"
+                          : productWeight.product_type) || ""
+                      }
+                      readOnly
+                    />
+                  </td>
+                  <td>
+                    <div className="icon">
+                      <FontAwesomeIcon
+                        icon={faEye}
+                        onClick={() => openPopup(product.id)}
+                      />
+                      <WeightFormPopup
+                        showPopup={showPopup.id === product.id ? true : false}
+                        closePopup={closePopup}
+                        productId={product.id}
+                        product={product}
+                        productInfo={{
+                          before_weight: product.before_weight,
+                          after_weight: product.after_weight,
+                          difference: product.difference,
+                          adjustment: product.adjustment,
+                          final_weight: product.final_weight,
+                          product_number: product.product_number,
+                        }}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colSpan="2">
+                  <b>Total Weight </b>
+                </td>
+                <td>
+                  <b>{totalBeforeWeight}</b>
+                </td>
+                <td>
+                  <b>{totalAfterWeight}</b>
+                </td>
+                <td>
+                  <b>{totalDifference}</b>
+                </td>
+                <td>
+                  <b>{totalAdjustment}</b>
+                </td>
+                <td>
+                  <b>{totalFinalWeight}</b>
                 </td>
               </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colSpan="2">
-                <b>Total Weight </b>
-              </td>
-              <td>
-                <b>{totalBeforeWeight}</b>
-              </td>
-              <td>
-                <b>{totalAfterWeight}</b>
-              </td>
-              <td>
-                <b>{totalDifference}</b>
-              </td>
-              <td>
-                <b>{totalAdjustment}</b>
-              </td>
-              <td>
-                <b>{totalFinalWeight}</b>
-              </td>
-
-            
-            </tr>
-          </tfoot>
-        </Table>
+            </tfoot>
+          </Table>
+          {/* <button className="pdf" onClick={exportPDF}>
+            Export as PDF
+          </button> */}
+        </div>
       </div>
-
+      <button
+        style={{ marginLeft: "5rem" }}
+        className="pdf"
+        onClick={exportPDF}
+      >
+        Export as PDF
+      </button>
       {showAddItemsPopup && (
         <div className="popup-1">
           <div className="popup-content">
@@ -466,11 +522,21 @@ const Products = () => {
                   onKeyDown={(e) => handleKeyDown(e, finalWeightRef)}
                 />
               </div>
+
               <div>
                 <label>Length:</label>
                 <input
                   value={finalWeight}
                   onChange={(e) => setFinalWeight(e.target.value)}
+                  ref={finalWeightRef}
+                  onKeyDown={(e) => handleKeyDown(e, productNumberRef)}
+                />
+              </div>
+              <div>
+                <label>Product No:</label>
+                <input
+                  value={product_no}
+                  onChange={(e) => setproduct_no(e.target.value)}
                   ref={finalWeightRef}
                   onKeyDown={(e) => handleKeyDown(e, productNumberRef)}
                 />

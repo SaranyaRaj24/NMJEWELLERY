@@ -12,7 +12,7 @@ const createNewProduct = async (req, res) => {
       stone_charge,
       hud,
       length,
-
+      product_no,
       lot_id = "",
       barcode_weight = 0,
     } = req.body;
@@ -29,7 +29,9 @@ const createNewProduct = async (req, res) => {
         adjustment: parseFloat(hud),
         final_weight: parseFloat(length),
         barcode_weight: parseFloat(barcode_weight),
-        product_number: tag_number + Math.random(4) * 1000,
+        product_number: product_no
+          ? product_no
+          : tag_number + Math.random(4) * 1000,
         lot_id,
       },
     });

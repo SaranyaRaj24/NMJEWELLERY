@@ -48,7 +48,7 @@ const WeightFormPopup = ({
           unit: "mm",
           format: [55, 12],
         });
-        pdf.addImage(imgData, "PNG", 10, 3, 45, 7);
+        pdf.addImage(imgData, "PNG", 13, 3, 45, 7);
         const pdfBlob = pdf.output("blob");
         const pdfUrl = URL.createObjectURL(pdfBlob);
 
@@ -75,7 +75,7 @@ const WeightFormPopup = ({
         updatedData
       );
       console.log(net, "ttttttttttttttttt");
-     
+
       const updatedProduct = {
         ...product,
         before_weight: updatedData.before_weight,
@@ -85,9 +85,8 @@ const WeightFormPopup = ({
         stone_charge: updatedData.stone_charge,
       };
 
- 
       alert("Product updated successfully!");
-     
+
       window.location.reload();
       closePopup();
     } catch (error) {
@@ -212,6 +211,7 @@ const WeightFormPopup = ({
                 alignItems: "center",
                 justifyContent: "center",
                 marginTop: "3rem",
+                marginLeft: "0.7rem",
               }}
             >
               <div
@@ -224,28 +224,27 @@ const WeightFormPopup = ({
                 <div
                   style={{
                     marginRight: "10rem",
-                    fontSize: "35px",
                     fontWeight: "bolder",
                     height: "40px",
                     display: "flex",
                     flexDirection: "column",
                     marginBottom: "3rem",
-                    marginLeft:"-60px"
+                    marginLeft: "-60px",
                   }}
                 >
-                  <span >NMC</span>
+                  <span style={{ fontSize: "40px" }}>NMC</span>
 
-                  <span>{product_number}</span>
+                  <span style={{ fontSize: "23px" }}>{product_number}</span>
                 </div>
               </div>
               <div
                 style={{
                   fontSize: "20px",
-                  marginLeft: "1rem",
+                  marginLeft: "2rem",
                   fontWeight: "bolder",
                   display: "flex",
-                  gap:"12px",
-                  marginLeft:"-80px"
+                  gap: "12px",
+                  marginLeft: "-80px",
                 }}
               >
                 <Barcode value={selectedProductNo || ""} size={80} />

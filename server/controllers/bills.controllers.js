@@ -51,16 +51,13 @@
 
 // module.exports = {getAllBills,createBills,deleteBills}
 
-
-
 const express = require("express");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-
 const getAllBills = async (req, res) => {
   try {
-    const allBills = await prisma.bills.findMany();
+    const allBills = await prisma.bills.findMany({ orderBy: { id: "desc" } });
     res.status(200).json(allBills);
   } catch (error) {
     console.log(error);
@@ -166,57 +163,53 @@ const modifyBillHold = async (req, res) => {
 
 const getBillsByBillNumber = async (req, res) => {
   try {
-    const bill_no=req.params.bill_number
-    const allBills = await prisma.bill_items.findMany({where:{
-      bill_number:bill_no
-    },
-  select:{
-    productInfo:true
-  }})
-  const billmod= allBills.map(elem=>{
-    return{
-      ...elem.productInfo
-    }
-  })
-    res.status(200).json({products:billmod});
+    const bill_no = req.params.bill_number;
+    const allBills = await prisma.bill_items.findMany({
+      where: {
+        bill_number: bill_no,
+      },
+      select: {
+        productInfo: true,
+      },
+    });
+    const billmod = allBills.map((elem) => {
+      return {
+        ...elem.productInfo,
+      };
+    });
+    res.status(200).json({ products: billmod });
   } catch (error) {
     console.log(error);
     res.status(404).json({ error: "No bills" });
   }
 };
 
-
-
 const postBillDetails = async (req, res) => {
   try {
-    const { button,
-        bill_name,
-        selected_products}=req.body
+    const { button, bill_name, selected_products } = req.body;
 
-        console.log(selected_products,"rrrrrrrrrrrrrr");
+    console.log(selected_products, "rrrrrrrrrrrrrr");
 
-    const random4Digit = Math.floor(1000 + Math.random() * 9000); 
+    const random4Digit = Math.floor(1000 + Math.random() * 9000);
     const todayDate = new Date().toISOString().split("T")[0].replace(/-/g, "");
-    
+
     const resultString = `${random4Digit}${todayDate}`;
     const newBill = await prisma.bills.create({
       data: {
         bill_number: resultString,
         bill_name,
-        
       },
     });
 
     const billNumber = newBill.bill_number;
 
     if (billNumber) {
-      const mappedData = selected_products.map((e)=>{
-        return{
-          bill_number:billNumber,
-          product_id:e.id
-        }
-      })
-
+      const mappedData = selected_products.map((e) => {
+        return {
+          bill_number: billNumber,
+          product_id: e.id,
+        };
+      });
 
       const postBillitems = await prisma.bill_items.createMany({
         data: mappedData,
@@ -224,33 +217,27 @@ const postBillDetails = async (req, res) => {
 
       console.log("iiii", postBillitems);
 
-        const productIdsToUpdate = selected_products.map((e) => e.productId);
-        const updateResult = await prisma.product_info.updateMany({
-          where: {
-            product_number: {
-              in: productIdsToUpdate,
-            },
+      const productIdsToUpdate = selected_products.map((e) => e.productId);
+      const updateResult = await prisma.product_info.updateMany({
+        where: {
+          product_number: {
+            in: productIdsToUpdate,
           },
-          data: {
-            product_type: button==="Sell"?"sold":"hold",
-          },
-        });
-        console.log(newBill,"pppppppppppppppppppppppppppppppppppppppppppppppp");
-        res.status(200).json({ bill: newBill });
-
-
-    }else{
-       res.status(404).json({ error: "No bill number" });
+        },
+        data: {
+          product_type: button === "Sell" ? "sold" : "hold",
+        },
+      });
+      console.log(newBill, "pppppppppppppppppppppppppppppppppppppppppppppppp");
+      res.status(200).json({ bill: newBill });
+    } else {
+      res.status(404).json({ error: "No bill number" });
     }
-    
   } catch (error) {
     console.log(error);
     res.status(404).json({ error: "No bills" });
   }
 };
-
-
-
 
 module.exports = {
   getAllBills,

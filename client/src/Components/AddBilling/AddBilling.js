@@ -3,14 +3,14 @@ import "../AddBilling/AddBilling.css";
 import Table from "react-bootstrap/esm/Table";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { useParams,useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import BarcodeReader from "react-barcode-reader";
 import axios from "axios";
 
 import Navbarr from "../Navbarr/Navbarr";
 
 const AddBilling = () => {
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const [scannedProducts, setScannedProducts] = useState([]);
   const [billName, setBillName] = useState("");
   const [checkedProducts, setCheckedProducts] = useState([]);
@@ -66,51 +66,48 @@ const AddBilling = () => {
     }
   };
 
+  const handleCheckboxChange = (productId, id) => {
+    setCheckedProducts((prevCheckedProducts) => {
+      let updatedCheckedProducts;
+      const isProductChecked = prevCheckedProducts.some(
+        (product) => product.productId === productId
+      );
 
-    const handleCheckboxChange = (productId, id) => {
-      setCheckedProducts((prevCheckedProducts) => {
-        let updatedCheckedProducts;
-         const isProductChecked = prevCheckedProducts.some(
-           (product) => product.productId === productId
-         );
+      if (isProductChecked) {
+        updatedCheckedProducts = prevCheckedProducts.filter(
+          (id) => id.productId !== productId
+        );
+      } else {
+        updatedCheckedProducts = [...prevCheckedProducts, { productId, id }];
+      }
+      console.log("Updated checked products:", updatedCheckedProducts);
 
-        if (isProductChecked) {
-          updatedCheckedProducts = prevCheckedProducts.filter(
-            (id) => id.productId !== productId
-          );
-        } else {
-          updatedCheckedProducts = [...prevCheckedProducts, { productId, id }];
-        }
-        console.log("Updated checked products:", updatedCheckedProducts);
-
-        console.log(updatedCheckedProducts,"pppppppppp")
-        return updatedCheckedProducts;
-      });
-    };
+      console.log(updatedCheckedProducts, "pppppppppp");
+      return updatedCheckedProducts;
+    });
+  };
 
   const handleSellApprove = async (value) => {
     try {
-
-      console.log(value,"llllllllllllllllllllll");
-      const response = await axios.post("http://localhost:5000/bills/bill-details", {
-        button: value,
-        bill_name: billName,
-        selected_products: checkedProducts,
-        
-      });
+      console.log(value, "llllllllllllllllllllll");
+      const response = await axios.post(
+        "http://localhost:5000/bills/bill-details",
+        {
+          button: value,
+          bill_name: billName,
+          selected_products: checkedProducts,
+        }
+      );
 
       if (response.status === 200) {
-        alert("Bill sold successfully!");
+        alert(`Bill ${value === "Sell" ? "SOLD" : "APPROVED"} successfully!`);
         navigate(`/billing/${response.data.bill.bill_number}`);
-        
       }
     } catch (error) {
       console.error("Error sending Sell data:", error);
       alert("Error selling bill.");
     }
   };
-
-  
 
   const handleApproval = async () => {
     try {
@@ -149,10 +146,7 @@ const AddBilling = () => {
     .reduce((acc, product) => acc + parseFloat(product.barcode_weight || 0), 0)
     .toFixed(3);
 
-
-
-
-    console.log(checkedProducts,"oooooooooooo")
+  console.log(checkedProducts, "oooooooooooo");
 
   return (
     <>
@@ -230,8 +224,6 @@ const AddBilling = () => {
                 <td>
                   <b>{totalFinalWeight}</b>
                 </td>
-
-          
               </tr>
             </tfoot>
           </Table>
@@ -268,5 +260,3 @@ const AddBilling = () => {
 };
 
 export default AddBilling;
-
-
