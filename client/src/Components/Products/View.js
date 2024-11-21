@@ -124,12 +124,12 @@ const WeightFormPopup = ({
               />
             </div>
             <div>
-              <label>Stone Weight:</label>
+              <label>Stone Charges:</label>
               <input
                 type="number"
                 value={stone_charge}
                 onChange={(e) => setStoneCharge(e.target.value)}
-                placeholder="Enter Stone Weight"
+                placeholder="Enter Stone Charges"
               />
             </div>
             <div>
@@ -252,7 +252,7 @@ const WeightFormPopup = ({
                 <div>
                   <div>GW: {beforeWeight}</div>
                   <div>NW: {afterWeight}</div>
-                  <div>SW: {stone_charge}</div>
+                  <div>SC: {stone_charge}</div>
                 </div>
               </div>
             </div>

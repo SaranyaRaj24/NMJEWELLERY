@@ -315,7 +315,7 @@ const Products = () => {
               <th>Product Number</th>
               <th>Gross Weight</th>
               <th>Net Weight</th>
-              <th>Stone Weight</th>
+              <th>Stone Charges</th>
               <th>HUD</th>
               <th>Length </th>
 
@@ -449,7 +449,7 @@ const Products = () => {
                 />
               </div>
               <div>
-                <label>Stone Weight:</label>
+                <label>Stone Charges:</label>
                 <input
                   value={difference}
                   onChange={(e) => setDifference(e.target.value)}

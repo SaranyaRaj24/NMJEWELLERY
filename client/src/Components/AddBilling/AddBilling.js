@@ -169,7 +169,7 @@ const AddBilling = () => {
                 <th>Product.No </th>
                 <th>Gross Weight</th>
                 <th>Net Weight</th>
-                <th>Stone Weight</th>
+                <th>Stone Charges</th>
                 <th>HUD</th>
                 <th>Length</th>
                 {bill_number === "bill" && <th>Checkbox</th>}
